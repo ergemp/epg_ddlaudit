@@ -48,5 +48,36 @@ ALTER EVENT TRIGGER trg_audit_ddl_drop_event disable;
 
 # Testing
 
+## Create a test user 
+
+create user u_test with password 'u_test';
+grant connect on database postgres to u_test;
+
+grant all on schema public to u_test;
+
+## Execute a DDL command with test user 
+
+create table t_test (col1 text);
+
+## View Audit Results with privileged user 
+
+```
+select *  from audit.t_ddl_audit_logs  where ssession_user='u_test';
+
+Name          |Value                          |
+--------------+-------------------------------+
+ttimestamp    |2024-10-21 15:22:13.789        |
+tg_tag        |CREATE TABLE                   |
+tg_event      |ddl_command_end                |
+ccurrent_user |audit                          |
+ssession_user |u_test                         |
+schema_name   |public                         |
+object_type   |table                          |
+object_name   |public.t_test                  |
+object_oid    |18267                          |
+ccurrent_query|create table t_test (col1 text)|
+```
+
+
 
 
